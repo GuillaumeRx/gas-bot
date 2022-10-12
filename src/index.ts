@@ -1,44 +1,26 @@
-import { Routes } from 'discord.js'
-import * as dotenv from 'dotenv'
-import { commands, COMMAND_NAMES, discordAppId, discordToken } from './config'
+import 'dotenv/config';
+
+import { Routes } from 'discord.js';
+import { commands, discordAppId, discordToken } from './config';
+import { autocompleteHandler, responseHandler } from './handlers';
 import {
   DiscordClientService,
   DiscordRestService,
-  GoogleMapService,
-} from './services'
-import { compress } from 'lz-string'
-
-dotenv.config()
+  GasService,
+} from './services';
 
 DiscordClientService.once('ready', () => {
-  console.log('Gas Bot is online !')
-})
+  console.log('Gas Bot is online !');
+});
 
-DiscordClientService.login(discordToken)
+DiscordClientService.login(discordToken);
 
-DiscordClientService.on('interactionCreate', async (interaction) => {
-  if (!interaction.isAutocomplete()) return
+DiscordClientService.on('interactionCreate', autocompleteHandler);
 
-  if (interaction.commandName === COMMAND_NAMES.Notify) {
-    const focusedValue = interaction.options.getFocused()
-
-    if (focusedValue && focusedValue !== '') {
-      const {
-        data: { predictions },
-      } = await GoogleMapService.autocompletePlace(focusedValue)
-
-      await interaction.respond(
-        predictions.map(({ description, place_id }) => {
-          return {
-            name: description,
-            value: compress(place_id),
-          }
-        }),
-      )
-    }
-  }
-})
+DiscordClientService.on('interactionCreate', responseHandler);
 
 DiscordRestService.put(Routes.applicationCommands(discordAppId), {
   body: commands,
-})
+});
+
+GasService.getStations();

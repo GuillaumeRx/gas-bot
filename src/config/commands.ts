@@ -1,4 +1,4 @@
-import { SlashCommandBuilder } from 'discord.js'
+import { SlashCommandBuilder } from 'discord.js';
 
 export enum COMMAND_NAMES {
   Notify = 'notify',
@@ -20,6 +20,7 @@ const notify = new SlashCommandBuilder()
       .setDescription('the radius to search')
       .setRequired(true)
       .addChoices(
+        { name: '5km', value: '5' },
         {
           name: '10km',
           value: '10',
@@ -28,8 +29,8 @@ const notify = new SlashCommandBuilder()
         { name: '50km', value: '50' },
         { name: '100km', value: '100' },
       ),
-  )
+  );
 
-const commandList = [notify]
+const commandList = [notify];
 
-export const commands = commandList.map((command) => command.toJSON())
+export const commands = commandList.map((command) => command.toJSON());
